@@ -1,0 +1,11 @@
+.text-field{
+    -fx-background-color: aqua;
+    -fx-font: 28px SansSerif;
+    -fx-alignment: center-right;
+    -fx-border-width: 2pt;
+    -fx-border-color: black;
+}
+
+.button{
+    -fx-font-size: 14pt;
+}
