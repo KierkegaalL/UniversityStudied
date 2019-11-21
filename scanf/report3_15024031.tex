@@ -1,0 +1,498 @@
+%==========================================================================
+%Template File
+%   Copyright (C) 2006-2009                                
+%           by Shinya Watanabe(sin@csse.muroran-it.ac.jp) 
+%==========================================================================
+\documentclass[a4j,titlepage]{jarticle}
+\usepackage{sty/programing_report}
+\usepackage{cases}
+\usepackage{sty/jquote}
+\usepackage{sty/eclbkbox}
+\usepackage{sty/itembkbx}
+\usepackage{sty/emathC}
+\usepackage{graphicx}
+\begin{document}
+
+%--------------------
+%以下に実験レポートのタイトル,自分のクラス名，学籍番号，氏名，提出日を書く．
+%--------------------
+
+%%\title{レポートタイトル}を記述する．
+\title{コンピュータ知能学演習 レポート}
+
+%%\author{クラス名}{学籍番号}{氏名}を記述する．
+\author{15024031}{奥　龍司}
+
+%%\date{提出する年月日}を記述する．
+\date{2016年7月4日}
+\maketitle
+
+%--------------------
+%以下から本文を開始する．
+%--------------------
+
+
+\section{プログラムソース}
+　以下に今週の課題で作ったプログラムのソースを記述する。
+\begin{breakitembox}[l]{ユークリッドの互除法} \small
+\begin{verbatim}
+/********************************************
+名前： Euclidean.c
+機能： ユークリッドの互除法を用いて、２つの値の最大公約数を求める
+入力及び出力： ２つの数字x,yを入力（但しx>0,y>0,x>y）
+作者： 15024031 奥　龍司
+特記事項：特になし
+********************************************/
+#include<stdio.h>
+
+void Euclide(int x,int y);
+
+int main(){
+    
+    int x=0;
+    int y=0;
+    int r;
+    int tmp;
+    
+  
+  printf("２つの値を入力してください\n");
+    while(1){
+        scanf("%u %u", &x, &y);
+        while(getc(stdin)!='\n');
+        if(x>0 && y>0){
+            break;
+        }
+    }
+    
+    Euclide(x , y);
+    
+return 0;
+}
+
+
+void Euclide(int x,int y){
+    
+    int r;
+    int tmp;
+    
+    if (x<y) {
+        tmp = x;
+        x = y;
+        y = tmp;
+    }
+    
+    while((r=x%y)!=0){
+        printf("x=%d    y=%d    r=%d\n", x, y, r);
+        x=y;
+        y=r;
+        continue;
+    }
+    
+    
+    printf("x=%d    y=%d    r=%d\n", x, y, r);
+    printf("最大公約数は%d\n",y);
+
+}
+\end{verbatim}
+\end{breakitembox}
+
+\begin{breakitembox}[l]{多項式計算} \small
+\begin{verbatim}
+/********************************************
+名前： Horner.c
+機能： ホーナーの方法で多項式を計算する
+入力及び出力： 多項式の係数a0からa5を入力
+作者： 15024031 奥　龍司
+特記事項：特になし
+********************************************/
+#include <stdio.h>
+#define DIM 4  // 多項式の最大次数は 4
+
+double Horner(double , double *);
+
+int main() {
+  
+  int i;
+  double a[DIM+1];  // 多項式 f(x) の係数を格納する配列.係数は DIM+1 個存在する
+  double x;         // f(x) における変数 x
+
+
+  for(i=0; i<=DIM; i++)   // a[0] から a[DIM] にそれぞれ係数 a_0 から a_DIM を入力する
+    {                     // 定数 DIM の値を変えても正しく動くように、各自作成すること
+      printf("a_%d= ",i);
+      scanf("%lf",&a[i]);
+    }
+
+  for (x = 1; x <= 5; x++)   // 多項式 f(x) での x=1 から x=5 までの値を求める
+
+    {
+      printf("f(%lf) = %lf\n", x, Horner(x, a));
+    }
+  
+  return 0;
+}
+
+
+double Horner(double x, double a[]) {
+  
+  double fx;
+  int i;
+  
+  fx = a[DIM];  // 漸化式の初期化(f_0 の計算)
+
+  for (i = DIM-1; i >= 0; i--)
+    {
+      fx = fx * x + a[i];  // 漸化式による f_i の計算
+    }
+    
+  return fx;
+}
+
+\end{verbatim}
+\end{breakitembox}
+
+\begin{breakitembox}[l]{スタック} \small
+\begin{verbatim}
+/********************************************
+名前： R_P_N.c
+機能： 逆ポーランド記法のプログラムを用いて四則演算をする
+入力及び出力： 算術演算子と数字を入力
+作者： 15024031 奥　龍司
+特記事項：特になし
+********************************************/
+/* スタックを用いた逆ポーランド電卓 */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define STACK_SIZE 100  // スタックの大きさ
+
+
+long stack[STACK_SIZE]; // スタック
+int pointer;            // 次にスタックに積まれるデータの位置を示す
+
+// プロトタイプ宣言
+void init(void);  // スタックを初期化する関数
+void push(long);  // スタックに要素を積む関数
+long pop(void);   // スタックから要素を取り出す関数
+
+
+
+int main(void) {
+  int c;
+  long x, a, b;
+  
+  init();
+
+  while ((c = getchar()) != EOF) {
+    
+    if (isdigit(c)) 
+      {
+
+	ungetc(c, stdin);  // 入力ストリームに文字(数字)を戻す
+	scanf("%ld", &x);  // 改めて,その数字を変数 x に入力させる
+	push(x);
+	
+      }else {
+      
+      switch(c) {
+	/* すべての四則演算において, 一番上の数をスタックから降ろして b に代入, 次の数をスタックから降ろして a に代入 */
+      case '+':
+	// スタックから b,a の順番で降ろし, a+b をスタックに積む
+	b=pop(); a=pop(); push(a+b); break;
+      case '-':
+	// スタックから b,a の順番で降ろし,a-b をスタックに積む
+	b=pop(); a=pop(); push(a-b); break;
+      case '*':
+	// スタックから b,a の順番で降ろし,a*b をスタックに積む
+	b=pop(); a=pop(); push(a*b); break;
+      case '/':
+	// スタックから b,a の順番で降ろし,a/b をスタックに積む
+	b=pop(); a=pop(); push(a/b); break;
+      case '\n':
+	printf("答えは %ld です.\n", pop()); init(); break;
+      case ' ':
+      case '\t':
+	break;
+      default:
+	printf("不正な文字がありました.もう一度入力してください\n");
+	while ((c = getchar()) != EOF && c != '\n'); break;
+      }
+      
+    }
+    
+  }
+}
+
+
+
+void init() {
+  
+  pointer = 0;
+  
+}  // スタックを初期化する関数
+
+
+void push(long x) { // スタックにデータを積む関数
+  if (pointer >= STACK_SIZE){
+
+    printf("Stack overflow\n");
+
+  } else {
+
+    //pointer++;
+    stack[pointer++] = x; // スタックに x の値を積み,ポインタを更新
+
+  }
+
+}
+long pop() {   // スタックからデータを降ろす関数
+  
+  if (pointer <= 0) {
+
+    printf("Stack underflow\n");
+    return 0;
+
+  } else {
+
+    pointer--;
+    return stack[pointer];   // スタックの一番上の数を返し,ポインタを更新
+
+  }
+}
+
+
+\end{verbatim}
+\end{breakitembox}
+
+\begin{breakitembox}[l]{キュー} \small
+\begin{verbatim}
+/********************************************
+名前： QSIZE.c
+機能： リングバッファを用いてキューを実装する
+入力及び出力： コマンドと数字を入力
+作者： 15024031 奥　龍司
+特記事項：特になし
+********************************************/
+/* リングバッファを用いたキューの実装 */
+#include <stdio.h>
+
+
+#define QSIZE 8  // キュー(待ち行列)の長さの上限
+#define next(x) ((x+1) % (QSIZE+1))  // x の次の位置を求めるマクロ
+
+
+int queue[QSIZE+1];  // リングバッファでキューの最大長を QSIZE とするには,長さ QSIZE+1 の配列が必要
+
+int head = 0;  // キューの先頭となるデータの位置
+int tail = 0;  // キューの末尾で次にデータが追加される位置
+
+int enqueue(int);  // キューの末尾にデータを追加する関数
+int dequeue(void);  // キューの先頭からデータを削除する関数
+void viewqueue(void);  // キューの内容を表示する関数
+
+
+int main(void) {
+  int n;
+  char c;
+  
+  while (1) {
+    printf("コマンド入力:");
+    scanf("%c", &c);
+
+
+    if (c == 'i') // キューにデータを 1 つ追加する
+      { 
+	printf("データ入力:");
+	scanf("%d", &n);
+	if (enqueue(n) == -1)
+	  {
+	    printf("待ち行列が満杯です\n");
+	  }
+	
+      }
+    
+    
+    if (c == 'o')    // キューからデータを 1 つ削除
+      {
+	if (dequeue() == -1) 
+	  {
+	    printf("待ち行列は空です\n"); 
+	  }
+	
+      }
+    
+    
+    if (c == 'q')  // プログラムの終了
+      {
+	printf("終了します\n");
+	break;
+      }
+    c = getchar(); // 改行コード\nを読み飛ばすため
+    
+    viewqueue();
+  }
+  return 0;
+}
+
+int enqueue(int n) {
+  
+  if (next(tail) != head)  // キューが満杯でないとき,末尾にデータを追加する
+    { 
+      queue[tail] = n;
+      tail = next(tail);  // tail の値を更新
+      return 0;
+    }
+  else return -1;
+}
+
+
+int dequeue(void) {
+  
+  int tmp;
+  
+  if (head != tail)   // キューが空でないとき,先頭のデータを削除する   
+    {
+      tmp = queue[head];
+      head = next(head);   // head の値を更新
+      return tmp;
+    }
+  else return -1;
+}
+
+
+void viewqueue(void) {
+  
+  int i;
+  
+  printf("先頭 ");
+  
+  for (i = head; i < tail; i=next(i))  // 変数 i を head から tail まで動かす
+    {
+      printf("%d ", queue[i]);
+    }
+  printf("末尾\n");
+  printf("head = %d, tail = %d\n", head, tail);
+} 
+
+
+
+\end{verbatim}
+\end{breakitembox}
+
+
+
+\section{プログラムの実行}
+プログラムの実行結果を以下に記す。
+\begin{breakitembox}[l]{ユークリッドの互除法} \small
+\begin{verbatim}
+okuryuji-no-MacBook-Pro:Documents Ryuji$ gcc -o Euclidean Euclidean.c
+okuryuji-no-MacBook-Pro:Documents Ryuji$ ./Euclidean
+２つの値を入力してください
+3 -19
+3 19
+x=19    y=3    r=1
+x=3    y=1    r=0
+最大公約数は1
+okuryuji-no-MacBook-Pro:Documents Ryuji$ ./Euclidean
+２つの値を入力してください
+78 21
+x=78    y=21    r=15
+x=21    y=15    r=6
+x=15    y=6    r=3
+x=6    y=3    r=0
+最大公約数は3
+okuryuji-no-MacBook-Pro:Documents Ryuji$ 
+
+\end{verbatim}
+\end{breakitembox}
+
+\begin{breakitembox}[l]{多項式計算} \small
+\begin{verbatim}
+okuryuji-no-MacBook-Pro:Documents Ryuji$ gcc -o Horner Horner.c
+okuryuji-no-MacBook-Pro:Documents Ryuji$ ./Horner
+a_0= 2
+a_1= 3
+a_2= 4
+a_3= 5
+a_4= 6
+f(1.000000) = 20.000000
+f(2.000000) = 160.000000
+f(3.000000) = 668.000000
+f(4.000000) = 1934.000000
+f(5.000000) = 4492.000000
+okuryuji-no-MacBook-Pro:Documents Ryuji$ 
+\end{verbatim}
+\end{breakitembox}
+
+\begin{breakitembox}[l]{スタック} \small
+\begin{verbatim}
+okuryuji-no-MacBook-Pro:Documents Ryuji$ gcc -o R_P_N R_P_N.c
+okuryuji-no-MacBook-Pro:Documents Ryuji$ ./R_P_N
+2 5 * 9 6 + 3 / - 
+答えは 5 です.
+\end{verbatim}
+\end{breakitembox}
+
+\begin{breakitembox}[l]{キュー} \small
+\begin{verbatim}
+okuryuji-no-MacBook-Pro:Documents Ryuji$ gcc -o QSIZE QSIZE.c
+okuryuji-no-MacBook-Pro:Documents Ryuji$ ./QSIZE
+コマンド入力:o
+待ち行列は空です
+先頭 末尾
+head = 0, tail = 0
+コマンド入力:i
+データ入力:3
+先頭 3 末尾
+head = 0, tail = 1
+コマンド入力:i
+データ入力:2
+先頭 3 2 末尾
+head = 0, tail = 2
+コマンド入力:i
+データ入力:5
+先頭 3 2 5 末尾
+head = 0, tail = 3
+コマンド入力:o
+先頭 2 5 末尾
+head = 1, tail = 3
+コマンド入力:q
+終了します
+okuryuji-no-MacBook-Pro:Documents Ryuji$ 
+\end{verbatim}
+\end{breakitembox}
+
+%\section{グラフ}
+%\vspace{5cm}
+%\begin{figure}[h]
+ % \includegraphics[width=24cm,bb=0 140 2000 387]{kyumenzu.png}
+%  \hspace*{8cm}
+ % \vspace*{-1cm}
+  %\includegraphics[width=24cm,bb=0 0 5000 387]{kyuumenzu2.png}
+%\end{figure}
+
+
+\section{考察}
+　ユークリッドの互除法を応用することで以下のようにプログラムの実行した時に用いた数値を用いて連分数展開を行う。
+ \[
+  \frac{78}{21} = 3+\frac{15}{21}=3+\frac{1}{\frac{21}{15}}=3+\frac{1}{1+\frac{6}{15}} =3+\frac{1}{1+\frac{1}{\frac{15}{6}}}=3+\frac{1}{1+\frac{1}{1+\frac{3}{6}}}=3+\frac{1}{1+\frac{1}{1+\frac{1}{2}}}
+\]
+ \\
+ \\
+ 　多項式計算は、for文内にprintf文とscanf文入れたことによって、aのi=0からi=DIMの値までを繰り返して入力できるようにした。
+\\
+\\
+
+キューについて、リングバッファで最大長がQSIZEのキューを実現するときQSIZE+1個の配列要素が必要となるのは、enqueue関数ではtailを示す場所を作るためで、dequeue関数ではheadの示すキュー先頭を一時的に保存して、１増やしてキュー先頭の値を返すためである。
+ 
+%------------
+%以下，参考文献に関する記述
+%------------
+%\begin{thebibliography}{9}
+%%\small{
+%%\bibitem{minamoto} やさしく学べる　C言語入門[第2版]-基礎から数値計算入門まで-　皆本晃弥 著
+%}
+%%\end{thebibliography}
+\end{document}

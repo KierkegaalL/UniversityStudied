@@ -1,0 +1,65 @@
+%--------------------------------------------------------------%
+%   Style File for The Programing Report at                    %
+%   Copyright (C) 2006-2009                                    %
+%           by Shinya Watanabe(sin@csse.muroran-it.ac.jp)      %
+%                                                              %
+%--------------------------------------------------------------%
+%   				Ver1.0 2006/04/11       				   %
+%--------------------------------------------------------------%
+%
+%
+\usepackage{multicol}
+\usepackage[xdvi]{graphics}
+\usepackage{boxedminipage}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{ascmac}
+\usepackage{enumerate}
+\usepackage{url}
+\usepackage{hhline}
+
+
+%--------------------------------------------------------------
+%引用記号の再定義
+%--------------------------------------------------------------
+%LaTeX階梯　p.206
+
+\def\@biblabel#1{#1)}
+\def\@cite#1#2{{$^{\mbox{\scriptsize $#1$}}$%
+	\if@tempswa , #2\fi}$^{\mbox{\scriptsize $)$}}$ }
+	
+%--------------------------------------------------------------
+%BiBTeX中のURL表示の再定義
+%要 url.sty(mikibaseにて取り込み)
+%--------------------------------------------------------------
+\renewcommand{\url}{\begingroup \urlstyle{tt}\Url}
+
+
+\renewcommand{\figurename}{図}
+\renewcommand{\tablename}{表}
+
+%--------------------------------------------------------------
+%図表及び数式の参照方法を定義
+%--------------------------------------------------------------
+\def\fgref#1{\figurename\hskip1ex \ref{#1}}
+\def\tbref#1{\tablename\hskip1ex \ref{#1}}
+\def\eqref#1{式(\ref{#1})}
+
+% 太めのラインを設定．
+\def\Hline{\noalign{\hrule height 0.4mm}}
+
+%--------------------------------------------------------------
+%提出者（著者）の出力に関する再定義
+%--------------------------------------------------------------
+
+\def\author#1#2{%
+	\def\and{\hspace{1em minus 1em}}%
+	\gdef\@author{\bf #1  \\ \bf  #2}}
+
+
+%--------------------------------------------------------------
+%提出日に関する再定義
+%--------------------------------------------------------------
+\def\date#1{%
+	\gdef\@date{提出日：#1}}

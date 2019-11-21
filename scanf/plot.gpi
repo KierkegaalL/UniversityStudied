@@ -1,0 +1,10 @@
+set terminal postscript eps enhanced color
+set output "spline.eps"
+set xrange[-15:25]
+set yrange[-2.5:2]
+set xlabel 'x-axis'
+set ylabel 'y-axis'
+f(x)=w+(b)*(x-(v))+(c)*(x-(v))**2+(d)*(x-(v))**3
+fit f(x) 'result.txt' using 1:2:3:4:5 via v,w,b,c,d
+plot 'data.txt' usi 1:2 w points
+replot f(x) 'result.txt' title 'spline curve' with lines
